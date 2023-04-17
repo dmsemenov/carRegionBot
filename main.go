@@ -13,5 +13,5 @@ func main() {
 		HandleTelegramWebHook(w, r);
 	})
 
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":80", r)
 }
