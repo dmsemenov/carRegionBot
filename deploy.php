@@ -12,19 +12,21 @@ set('shared_files', [
     'docker-compose.yml'
 ]);
 
+set('dotenv', '{{current_path}}/.env');
+
 // SERVERS
 host('test')
     ->set('labels', ['stage' => 'development'])
     ->set('branch', 'develop')
-    ->setHostname('185.178.44.125')
+    ->setHostname(getenv('DEP_HOST'))
     ->setRemoteUser('deployer')
-    ->setDeployPath('/home/deployer/projects/carregionbot.1108811-cd43481.tw1.ru')
+    ->setDeployPath(getenv('DEP_DEPLOYPATH'))
     ->setIdentityFile('~/.ssh/id_rsa_home');
 
 host('prod')
     ->set('labels', ['stage' => 'production'])
     ->set('branch', 'master')
-    ->setHostname('185.178.44.125')
+    ->setHostname(getenv('DEP_HOST'))
     ->setRemoteUser('deployer')
-    ->setDeployPath('/home/deployer/projects/carregionbot.1108811-cd43481.tw1.ru')
+    ->setDeployPath(getenv('DEP_DEPLOYPATH'))
     ->setIdentityFile('~/.ssh/id_rsa_home');
