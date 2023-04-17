@@ -1,0 +1,20 @@
+version: '3.7'
+services:
+  go-web-app:
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: .
+    expose:
+      - "80"
+      - "443"  
+    environment:
+      - VIRTUAL_HOST=
+      - LETSENCRYPT_HOST=   
+      - VIRTUAL_PORT=80
+    networks: 
+        - "net"    
+
+networks:
+  net:
+    external: true
