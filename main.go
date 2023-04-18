@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -9,9 +10,10 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/webhook", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("carregionbot/webhook", func(w http.ResponseWriter, r *http.Request) {
 		HandleTelegramWebHook(w, r);
+		fmt.Fprintf(w, "<h1>Telegram webhook!\n</h1>")
 	})
 
-	http.ListenAndServe(":80", r)
+	http.ListenAndServe(":8080", r)
 }
