@@ -9,7 +9,7 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	r.HandleFunc("carregionbot/webhook", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/carregionbot/webhook", func(w http.ResponseWriter, r *http.Request) {
 		HandleTelegramWebHook(w, r);
 	})
 
