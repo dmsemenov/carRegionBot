@@ -18,16 +18,13 @@ const startCommand string = "/start"
 
 const startInfo string = "Now you can enter registation region code (ex. 01, 05, 18)."
 
-
-// Pass token and sensible APIs through environment variables
 const telegramApiBaseUrl string = "https://api.telegram.org/bot"
-const telegramApiSendMessage string = "/sendMessage"
-const telegramTokenEnv string = "TELEGRAM_BOT_TOKEN"
 
-var telegramApi string = telegramApiBaseUrl + os.Getenv(telegramTokenEnv) + telegramApiSendMessage
+var telegramApi string = telegramApiBaseUrl + os.Getenv("TELEGRAM_BOT_TOKEN") + "/sendMessage"
 
 
-// Update is a Telegram object that we receive every time an user interacts with the bot.
+// Update Telegram object
+// See: https://core.telegram.org/bots/api#update
 type Update struct {
 	UpdateId int     `json:"update_id"`
 	Message  Message `json:"message"`
@@ -55,6 +52,7 @@ func (c Chat) String() string {
 	return fmt.Sprintf("(id: %d)", c.Id)
 }
 
+//
 type Regions struct {
     Regions []Region `json:"data"`
 }
@@ -73,7 +71,7 @@ func HandleTelegramWebHook(w http.ResponseWriter, r *http.Request) {
 	// Parse incoming request
 	var update, err = parseTelegramRequest(r)
 	if err != nil {
-		log.Printf("error parsing update, %s", err.Error())
+		log.Printf("Error parsing update, %s", err.Error())
 		return
 	}
 
@@ -87,7 +85,7 @@ func HandleTelegramWebHook(w http.ResponseWriter, r *http.Request) {
 	// Send region name to Telegram
 	var telegramResponseBody, errTelegram = sendTextToTelegramChat(update.Message.Chat.Id, text)
 	if errTelegram != nil {
-		log.Printf("got error %s from telegram, response body is %s", errTelegram.Error(), telegramResponseBody)
+		log.Printf("Got error %s from telegram, response body is %s", errTelegram.Error(), telegramResponseBody)
 	} else {
 		log.Printf("Message %s successfully distributed to chat id %d", text, update.Message.Chat.Id)
 	}
@@ -99,12 +97,12 @@ func HandleTelegramWebHook(w http.ResponseWriter, r *http.Request) {
 func parseTelegramRequest(r *http.Request) (*Update, error) {
 	var update Update
 	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
-		log.Printf("could not decode incoming update %s", err.Error())
+		log.Printf("Could not decode incoming update %s", err.Error())
 		return nil, err
 	}
 	if update.UpdateId == 0 {
-		log.Printf("invalid update id, got update id = 0")
-		return nil, errors.New("invalid update id of 0 indicates failure to parse incoming update")
+		log.Printf("Invalid update id, got update id = 0")
+		return nil, errors.New("Invalid update id of 0 indicates failure to parse incoming update")
 	}
 	return &update, nil
 }
@@ -116,9 +114,9 @@ func getRegionName(code string) string {
 
 	// Open our jsonFile
 	// Source http://basicdata.ru/api/json/fias/addrobj
-	jsonFile, err := os.Open("regions.json")
+	jsonFile, err := os.Open(os.Getenv("REGIONS_JSON_PATH") + "regions.json")
 
-	// if we os.Open returns an error then handle it
+	// If we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -137,6 +135,8 @@ func getRegionName(code string) string {
 			return fmt.Sprintf("%s (%s)", regions.Regions[i].Offname, regions.Regions[i].Shortname)
 		}
 	}
+
+	log.Printf("Сode does not exist.")
 
 	return  botName + ": Сode does not exist."
 }
